@@ -1,11 +1,13 @@
-# Write Clean and Simple Code
+# Chapter 4: Write Clean and Simple Code
 *A practical cheat‑sheet of 17 principles for building software that stays readable, maintainable, and safe to change.*
+
+> "Most of the cost of a software project is in long-term maintenance. Writing clean code from the start is the most cost-effective strategy."
 
 > **Core idea:** Write code that is easy to **understand**, easy to **change**, and hard to **break**.
 
 ---
 
-## Table of Contents
+## Writing Clean Code: The Principles
 1. [Think About the Big Picture](#1-think-about-the-big-picture)  
 2. [Stand on the Shoulders of Giants](#2-stand-on-the-shoulders-of-giants)  
 3. [Code for People, Not Machines](#3-code-for-people-not-machines)  
@@ -83,10 +85,22 @@ Big-picture thinking is a time-efficient way to drastically reduce the complexit
 Good names reduce the need for comments and prevent mistakes.
 
 ### Naming rules
-- **Choose descriptive names:** `usd_to_eur(amount)` rather than `f(x)`  
-- **Choose unambiguous names:** `usd_to_eur(amount)` rather than `dollars_to_eur` (what kind of dollars?)  
-- **Use pronounceable names:** `customer_list` rather than `cstmr_lst`  
+- **Choose descriptive names:** `usd_to_eur(amount)` rather than `f(x)`
+- **Choose unambiguous names:** `usd_to_eur(amount)` rather than `dollars_to_eur` (what kind of dollars?)
+- **Use pronounceable names:** `customer_list` rather than `cstmr_lst`
 - **Use named constants, not magic numbers:** `CONVERSION_RATE = 0.9`
+
+```python
+# Bad
+def f(x):
+    return x * 0.9
+
+# Good
+CONVERSION_RATE = 0.9
+
+def usd_to_eur(amount):
+    return amount * CONVERSION_RATE
+```
 
 ### Additional naming guidelines
 - Prefer **nouns** for data, **verbs** for actions.
@@ -162,6 +176,25 @@ Bad comments rot and lie.
 
 **Caution**
 - Don’t create “abstract” helpers too early. Duplicate a tiny bit until patterns are stable.
+
+```python
+# Bad — duplicated logic
+def get_active_users():
+    return [u for u in users if u.is_active and not u.is_banned]
+
+def get_active_admins():
+    return [u for u in admins if u.is_active and not u.is_banned]
+
+# Good — extract shared logic
+def is_eligible(user):
+    return user.is_active and not user.is_banned
+
+def get_active_users():
+    return [u for u in users if is_eligible(u)]
+
+def get_active_admins():
+    return [u for u in admins if is_eligible(u)]
+```
 
 ---
 
@@ -250,6 +283,25 @@ Testing protects behavior and enables confident change.
 - Extract nested blocks into named functions.
 - Use polymorphism/dispatch tables instead of giant if/else ladders.
 
+```python
+# Bad — deep nesting
+def process_order(order):
+    if order:
+        if order.is_valid:
+            if order.has_stock:
+                order.ship()
+
+# Good — guard clauses
+def process_order(order):
+    if not order:
+        return
+    if not order.is_valid:
+        return
+    if not order.has_stock:
+        return
+    order.ship()
+```
+
 ---
 
 ## 16) Use Metrics
@@ -289,6 +341,11 @@ Testing protects behavior and enables confident change.
 - [ ] Are important decisions documented (when needed)?
 - [ ] Do we measure the right things?
 - [ ] Did we leave the code a little cleaner?
+
+---
+
+## Key Takeaway
+These 17 rules all serve the same goal: **reducing complexity**. Good names, small functions, minimal repetition, and shallow nesting make code easier to read and change. Clean code isn't about perfection—it's about writing software that respects the time and attention of every developer who will touch it after you.
 
 ---
 
